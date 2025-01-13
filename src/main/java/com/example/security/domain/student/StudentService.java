@@ -1,5 +1,6 @@
 package com.example.security.domain.student;
 
+import com.example.security.global.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,12 @@ public class StudentService {
     }
 
     public Student createStudent(String name, String password, String nickname) {
+        studentRepository
+                .findByName(name)
+                .ifPresent(_ -> {
+                    throw new ServiceException("409-1", "해당 username은 이미 사용중입니다.");
+                });
+
         Student student = Student.builder()
                 .name(name)
                 .password(password)
