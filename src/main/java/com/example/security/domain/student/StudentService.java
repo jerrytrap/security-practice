@@ -16,11 +16,11 @@ public class StudentService {
         return studentRepository.count();
     }
 
-    public Student createStudent(String name, Integer age, String password) {
+    public Student createStudent(String name, String password, String nickname) {
         Student student = Student.builder()
                 .name(name)
-                .age(age)
                 .password(password)
+                .nickname(nickname)
                 .apiKey(UUID.randomUUID().toString())
                 .build();
 
@@ -39,9 +39,8 @@ public class StudentService {
         studentRepository.delete(student);
     }
 
-    public void modify(Student student, String name, Integer age) {
+    public void modify(Student student, String name) {
         student.setName(name);
-        student.setAge(age);
     }
 
     public Optional<Student> findStudentByName(String name) {

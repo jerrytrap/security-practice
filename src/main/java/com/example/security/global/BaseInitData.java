@@ -34,13 +34,13 @@ public class BaseInitData {
     public void createSampleStudents() {
         if (studentService.getCount() > 0) return;
 
-        Student student1 = studentService.createStudent("이름1", 20, "1234");
+        Student student1 = studentService.createStudent("user1", "1234", "이름1");
         if (AppConfig.isNotProd()) student1.setApiKey("user1");
 
-        Student student2 = studentService.createStudent("이름2", 30, "1234");
+        Student student2 = studentService.createStudent("user2", "1234", "이름2");
         if (AppConfig.isNotProd()) student2.setApiKey("user2");
 
-        Student student3 = studentService.createStudent("이름3", 40, "1234");
+        Student student3 = studentService.createStudent("user3", "1234", "이름3");
         if (AppConfig.isNotProd()) student3.setApiKey("user3");
 
     }
@@ -49,9 +49,9 @@ public class BaseInitData {
     public void createSampleReports() {
         if (reportService.count() > 0) return;
 
-        Student student1 = studentService.findStudentByName("이름1").get();
-        Student student2 = studentService.findStudentByName("이름2").get();
-        Student student3 = studentService.findStudentByName("이름3").get();
+        Student student1 = studentService.findStudentByName("user1").get();
+        Student student2 = studentService.findStudentByName("user2").get();
+        Student student3 = studentService.findStudentByName("user3").get();
 
         Report report1 = reportService.create(student1, "보고서1", "내용1");
         report1.addComment(student2, "확인");

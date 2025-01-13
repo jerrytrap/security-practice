@@ -24,6 +24,5 @@ public class StudentDto {
         this.createDate = student.getCreateDate();
         this.modifyDate = student.getModifiedDate();
         this.name = student.getName();
-        this.age = student.getAge();
     }
 }
