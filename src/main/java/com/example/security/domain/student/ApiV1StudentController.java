@@ -21,10 +21,14 @@ public class ApiV1StudentController {
     }
 
     @PostMapping("/join")
-    public RsData<Void> join(
+    public RsData<StudentDto> join(
             @RequestBody StudentJoinReqBody reqBody
     ) {
         Student student = studentService.createStudent(reqBody.username, reqBody.password, reqBody.nickname);
-        return new RsData<>("201-1", "%s님 환영합니다. 회원가입이 완료되었습니다.".formatted(student.getNickname()));
+        return new RsData<>(
+                "201-1",
+                "%s님 환영합니다. 회원가입이 완료되었습니다.".formatted(student.getNickname()),
+                new StudentDto(student)
+        );
     }
 }

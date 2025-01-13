@@ -53,7 +53,12 @@ class ApiV1StudentControllerTest {
                 .andExpect(handler().methodName("join"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.resultCode").value("201-1"))
-                .andExpect(jsonPath("$.msg").value("무명님 환영합니다. 회원가입이 완료되었습니다."));
+                .andExpect(jsonPath("$.msg").value("무명님 환영합니다. 회원가입이 완료되었습니다."))
+                .andExpect(jsonPath("$.data").exists())
+                .andExpect(jsonPath("$.data.id").isNumber())
+                .andExpect(jsonPath("$.data.createDate").isString())
+                .andExpect(jsonPath("$.data.modifyDate").isString())
+                .andExpect(jsonPath("$.data.nickname").value("무명"));
 
         Student student = studentService.findStudentByName("new user").get();
         assertThat(student.getNickname()).isEqualTo("무명");
