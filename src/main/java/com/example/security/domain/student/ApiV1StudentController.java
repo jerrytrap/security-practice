@@ -1,6 +1,7 @@
 package com.example.security.domain.student;
 
 import com.example.security.global.RsData;
+import com.example.security.global.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,37 @@ public class ApiV1StudentController {
                 "201-1",
                 "%s님 환영합니다. 회원가입이 완료되었습니다.".formatted(student.getNickname()),
                 new StudentDto(student)
+        );
+    }
+
+    record StudentLoginReqBody(
+            String username,
+            String password
+    ) {
+    }
+    record StudentLoginResBody(
+            StudentDto item,
+            String apiKey
+    ) {
+    }
+    @PostMapping("/login")
+    public RsData<StudentLoginResBody> login(
+            @RequestBody StudentLoginReqBody reqBody
+    ) {
+        Student student = studentService
+                .findStudentByName(reqBody.username)
+                .orElseThrow(() -> new ServiceException("401-1", "존재하지 않는 사용자입니다."));
+
+        if (!student.matchPassword(reqBody.password))
+            throw new ServiceException("401-2", "비밀번호가 일치하지 않습니다.");
+
+        return new RsData<>(
+                "200-1",
+                "%s님 환영합니다.".formatted(student.getName()),
+                new StudentLoginResBody(
+                        new StudentDto(student),
+                        student.getApiKey()
+                )
         );
     }
 }
