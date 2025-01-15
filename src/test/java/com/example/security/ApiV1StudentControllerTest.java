@@ -96,4 +96,30 @@ class ApiV1StudentControllerTest {
                 .andExpect(jsonPath("$.data.item.nickname").value("이름1"))
                 .andExpect(jsonPath("$.data.apiKey").isString());
     }
+
+    @Test
+    @DisplayName("회원가입 시 이미 사용중인 username, 409")
+    void t3() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/students/join")
+                                .content("""
+                                        {
+                                            "username": "user1",
+                                            "password": "1234",
+                                            "nickname": "무명"
+                                        }
+                                        """.stripIndent())
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1StudentController.class))
+                .andExpect(handler().methodName("join"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.resultCode").value("409-1"))
+                .andExpect(jsonPath("$.msg").value("해당 username은 이미 사용중입니다."));
+    }
 }
