@@ -82,6 +82,8 @@ class ApiV1StudentControllerTest {
                 )
                 .andDo(print());
 
+        Student student = studentService.findStudentByName("user1").get();
+
         resultActions
                 .andExpect(handler().handlerType(ApiV1StudentController.class))
                 .andExpect(handler().methodName("login"))
@@ -90,11 +92,11 @@ class ApiV1StudentControllerTest {
                 .andExpect(jsonPath("$.msg").value("user1님 환영합니다."))
                 .andExpect(jsonPath("$.data").exists())
                 .andExpect(jsonPath("$.data.item").exists())
-                .andExpect(jsonPath("$.data.item.id").isNumber())
+                .andExpect(jsonPath("$.data.item.id").value(student.getId()))
                 .andExpect(jsonPath("$.data.item.createDate").isString())
                 .andExpect(jsonPath("$.data.item.modifyDate").isString())
                 .andExpect(jsonPath("$.data.item.nickname").value("이름1"))
-                .andExpect(jsonPath("$.data.apiKey").isString());
+                .andExpect(jsonPath("$.data.apiKey").value(student.getApiKey()));
     }
 
     @Test
