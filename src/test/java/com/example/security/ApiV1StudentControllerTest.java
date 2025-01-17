@@ -124,4 +124,29 @@ class ApiV1StudentControllerTest {
                 .andExpect(jsonPath("$.resultCode").value("409-1"))
                 .andExpect(jsonPath("$.msg").value("해당 username은 이미 사용중입니다."));
     }
+
+    @Test
+    @DisplayName("로그인, without username")
+    void t4() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/students/login")
+                                .content("""
+                                        {
+                                            "username": "",
+                                            "password": "1234"
+                                        }
+                                        """.stripIndent())
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1StudentController.class))
+                .andExpect(handler().methodName("login"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.resultCode").value("401-1"))
+                .andExpect(jsonPath("$.msg").value("존재하지 않는 사용자입니다."));
+    }
 }
