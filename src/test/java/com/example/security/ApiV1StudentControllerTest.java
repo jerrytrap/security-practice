@@ -149,4 +149,29 @@ class ApiV1StudentControllerTest {
                 .andExpect(jsonPath("$.resultCode").value("401-1"))
                 .andExpect(jsonPath("$.msg").value("존재하지 않는 사용자입니다."));
     }
+
+    @Test
+    @DisplayName("로그인, without password")
+    void t5() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/students/login")
+                                .content("""
+                                        {
+                                            "username": "user1",
+                                            "password": ""
+                                        }
+                                        """.stripIndent())
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1StudentController.class))
+                .andExpect(handler().methodName("login"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.resultCode").value("401-2"))
+                .andExpect(jsonPath("$.msg").value("비밀번호가 일치하지 않습니다."));
+    }
 }
