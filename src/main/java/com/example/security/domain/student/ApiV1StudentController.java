@@ -1,29 +1,33 @@
 package com.example.security.domain.student;
 
+import com.example.security.global.Rq;
 import com.example.security.global.RsData;
 import com.example.security.global.ServiceException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/students")
 @RequiredArgsConstructor
 public class ApiV1StudentController {
+    private final Rq rq;
     private final StudentService studentService;
 
     record StudentJoinReqBody(
+            @NotBlank
             String username,
+            @NotBlank
             String password,
+            @NotBlank
             String nickname
     ) {
     }
 
     @PostMapping("/join")
     public RsData<StudentDto> join(
-            @RequestBody StudentJoinReqBody reqBody
+            @RequestBody @Valid StudentJoinReqBody reqBody
     ) {
         Student student = studentService.createStudent(reqBody.username, reqBody.password, reqBody.nickname);
         return new RsData<>(
@@ -34,7 +38,9 @@ public class ApiV1StudentController {
     }
 
     record StudentLoginReqBody(
+            @NotBlank
             String username,
+            @NotBlank
             String password
     ) {
     }
@@ -45,7 +51,7 @@ public class ApiV1StudentController {
     }
     @PostMapping("/login")
     public RsData<StudentLoginResBody> login(
-            @RequestBody StudentLoginReqBody reqBody
+            @RequestBody @Valid StudentLoginReqBody reqBody
     ) {
         Student student = studentService
                 .findStudentByName(reqBody.username)
@@ -62,5 +68,12 @@ public class ApiV1StudentController {
                         student.getApiKey()
                 )
         );
+    }
+
+    @GetMapping("/me")
+    public StudentDto me() {
+        Student student = rq.checkAuthentication();
+
+        return new StudentDto(student);
     }
 }
