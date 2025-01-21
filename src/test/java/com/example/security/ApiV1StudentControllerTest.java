@@ -101,8 +101,38 @@ class ApiV1StudentControllerTest {
     }
 
     @Test
-    @DisplayName("회원가입 시 이미 사용중인 username, 409")
+    @DisplayName("회원가입 without username, password, nickname")
     void t3() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/students/join")
+                                .content("""
+                                        {
+                                            "username": "",
+                                            "password": "",
+                                            "nickname": ""
+                                        }
+                                        """.stripIndent())
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1StudentController.class))
+                .andExpect(handler().methodName("join"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-1"))
+                .andExpect(jsonPath("$.msg").value("""
+                        nickname-NotBlank-must not be blank
+                        password-NotBlank-must not be blank
+                        username-NotBlank-must not be blank
+                        """.stripIndent().trim()));
+    }
+
+    @Test
+    @DisplayName("회원가입 시 이미 사용중인 username, 409")
+    void t4() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/students/join")
@@ -128,7 +158,7 @@ class ApiV1StudentControllerTest {
 
     @Test
     @DisplayName("로그인, without username")
-    void t4() throws Exception {
+    void t5() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/students/login")
@@ -153,7 +183,7 @@ class ApiV1StudentControllerTest {
 
     @Test
     @DisplayName("로그인, without password")
-    void t5() throws Exception {
+    void t6() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/students/login")
@@ -179,7 +209,7 @@ class ApiV1StudentControllerTest {
 
     @Test
     @DisplayName("로그인, with wrong username")
-    void t6() throws Exception {
+    void t7() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/students/login")
@@ -204,7 +234,7 @@ class ApiV1StudentControllerTest {
 
     @Test
     @DisplayName("로그인, with wrong password")
-    void t7() throws Exception {
+    void t8() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/students/login")
@@ -229,7 +259,7 @@ class ApiV1StudentControllerTest {
 
     @Test
     @DisplayName("내 정보, with user1")
-    void t8() throws Exception {
+    void t9() throws Exception {
         Student student = studentService.findStudentByName("user1").get();
 
         ResultActions resultActions = mvc
