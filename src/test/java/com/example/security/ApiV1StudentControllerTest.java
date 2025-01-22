@@ -280,4 +280,40 @@ class ApiV1StudentControllerTest {
                 .andExpect(jsonPath("$.modifyDate").value(Matchers.startsWith(student.getModifiedDate().toString().substring(0, 25))))
                 .andExpect(jsonPath("$.nickname").value(student.getNickname()));
     }
+
+    @Test
+    @DisplayName("내 정보, with user2")
+    void t10() throws Exception {
+        Student student = studentService.findStudentByName("user2").get();
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/students/me")
+                                .header("Authorization", "Bearer " + student.getApiKey())
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1StudentController.class))
+                .andExpect(handler().methodName("me"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(student.getId()))
+                .andExpect(jsonPath("$.createDate").value(Matchers.startsWith(student.getCreateDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.modifyDate").value(Matchers.startsWith(student.getModifiedDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.nickname").value(student.getNickname()));
+    }
+    @Test
+    @DisplayName("내 정보, with wrong api key")
+    void t11() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/students/me")
+                                .header("Authorization", "Bearer wrong-api-key")
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1StudentController.class))
+                .andExpect(handler().methodName("me"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.resultCode").value("401-1"))
+                .andExpect(jsonPath("$.msg").value("사용자 인증정보가 올바르지 않습니다."));
+    }
 }
