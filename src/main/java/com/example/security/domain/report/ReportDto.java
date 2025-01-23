@@ -13,7 +13,9 @@ public class ReportDto {
 
     private LocalDateTime modifyDate;
 
-    private StudentDto author;
+    private long authorId;
+
+    private String authorName;
 
     private String title;
 
@@ -23,7 +25,8 @@ public class ReportDto {
         this.id = report.getId();
         this.createDate = report.getCreateDate();
         this.modifyDate = report.getModifiedDate();
-        this.author = new StudentDto(report.getAuthor());
+        this.authorId = report.getAuthor().getId();
+        this.authorName = report.getAuthor().getName();
         this.title = report.getTitle();
         this.content = report.getContent();
     }
