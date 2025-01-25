@@ -48,4 +48,8 @@ public class ReportService {
     public void flush() {
         reportRepository.flush();
     }
+
+    public Optional<Report> findLatest() {
+        return reportRepository.findFirstByOrderByIdDesc();
+    }
 }
