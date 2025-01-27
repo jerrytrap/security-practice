@@ -23,13 +23,14 @@ public class ApiV1ReportController {
 
     record PostWriteReqBody(
             @NotBlank
-            @Length(min = 2)
+            @Length(min = 2, max = 100)
             String title,
             @NotBlank
-            @Length(min = 2)
+            @Length(min = 2, max = 10000000)
             String content
     ) {
     }
+
     @PostMapping
     public RsData<ReportDto> create(
             @RequestBody @Valid PostWriteReqBody reqBody

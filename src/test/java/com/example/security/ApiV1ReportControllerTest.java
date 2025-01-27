@@ -111,4 +111,36 @@ public class ApiV1ReportControllerTest {
                 .andExpect(jsonPath("$.data.title").value(report.getTitle()))
                 .andExpect(jsonPath("$.data.content").value(report.getContent()));
     }
+
+    @Test
+    @DisplayName("글 작성, with no input")
+    void t4() throws Exception {
+        Student actor = studentService.findStudentByName("user1").get();
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/reports")
+                                .header("Authorization", "Bearer " + actor.getApiKey())
+                                .content("""
+                                        {
+                                            "title": "",
+                                            "content": ""
+                                        }
+                                        """)
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportController.class))
+                .andExpect(handler().methodName("create"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.resultCode").value("400-1"))
+                .andExpect(jsonPath("$.msg").value("""
+                        content-Length-length must be between 2 and 10000000
+                        content-NotBlank-must not be blank
+                        title-Length-length must be between 2 and 100
+                        title-NotBlank-must not be blank
+                        """.stripIndent().trim()));
+    }
 }
