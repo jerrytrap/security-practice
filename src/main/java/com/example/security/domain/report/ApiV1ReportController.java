@@ -43,4 +43,28 @@ public class ApiV1ReportController {
                 new ReportDto(report)
         );
     }
+    record PostModifyReqBody(
+            @NotBlank
+            @Length(min = 2, max = 100)
+            String title,
+            @NotBlank
+            @Length(min = 2, max = 10000000)
+            String content
+    ) {
+    }
+    @PutMapping("/{id}")
+    public RsData<ReportDto> modify(
+            @PathVariable long id,
+            @RequestBody @Valid PostModifyReqBody reqBody
+    ) {
+        Student actor = rq.checkAuthentication();
+        Report report = reportService.findById(id).get();
+        report.checkActorCanModify(actor);
+        reportService.modify(report, reqBody.title, reqBody.content);
+        return new RsData<>(
+                "200-1",
+                "%d번 글이 수정되었습니다.".formatted(id),
+                new ReportDto(report)
+        );
+    }
 }

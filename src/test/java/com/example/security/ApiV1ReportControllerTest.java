@@ -18,10 +18,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -167,5 +167,40 @@ public class ApiV1ReportControllerTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.resultCode").value("401-1"))
                 .andExpect(jsonPath("$.msg").value("api key를 입력해주세요."));
+    }
+
+    @Test
+    @DisplayName("글 수정")
+    void t6() throws Exception {
+        Student actor = studentService.findStudentByName("user1").get();
+        Report report = reportService.findById(1).get();
+        LocalDateTime oldModifyDate = report.getModifiedDate();
+        ResultActions resultActions = mvc
+                .perform(
+                        put("/api/v1/reports/1")
+                                .header("Authorization", "Bearer " + actor.getApiKey())
+                                .content("""
+                                        {
+                                            "title": "축구 하실 분 계신가요?",
+                                            "content": "14시 까지 22명을 모아야 진행이 됩니다."
+                                        }
+                                        """)
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportController.class))
+                .andExpect(handler().methodName("modify"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("1번 글이 수정되었습니다."))
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(report.getCreateDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.authorId").value(report.getAuthor().getId()))
+                .andExpect(jsonPath("$.data.authorName").value(report.getAuthor().getName()))
+                .andExpect(jsonPath("$.data.title").value("축구 하실 분 계신가요?"))
+                .andExpect(jsonPath("$.data.content").value("14시 까지 22명을 모아야 진행이 됩니다."));
     }
 }
