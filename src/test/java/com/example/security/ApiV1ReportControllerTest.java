@@ -143,4 +143,29 @@ public class ApiV1ReportControllerTest {
                         title-NotBlank-must not be blank
                         """.stripIndent().trim()));
     }
+
+    @Test
+    @DisplayName("글 작성, with no actor")
+    void t5() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/reports")
+                                .content("""
+                                        {
+                                            "title": "제목 new",
+                                            "content": "내용 new"
+                                        }
+                                        """)
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportController.class))
+                .andExpect(handler().methodName("create"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.resultCode").value("401-1"))
+                .andExpect(jsonPath("$.msg").value("api key를 입력해주세요."));
+    }
 }
