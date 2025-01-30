@@ -61,6 +61,8 @@ public class ApiV1ReportController {
         Report report = reportService.findById(id).get();
         report.checkActorCanModify(actor);
         reportService.modify(report, reqBody.title, reqBody.content);
+        reportService.flush();
+
         return new RsData<>(
                 "200-1",
                 "%d번 글이 수정되었습니다.".formatted(id),
