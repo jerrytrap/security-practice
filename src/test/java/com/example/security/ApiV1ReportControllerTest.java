@@ -198,6 +198,7 @@ public class ApiV1ReportControllerTest {
                 .andExpect(jsonPath("$.msg").value("1번 글이 수정되었습니다."))
                 .andExpect(jsonPath("$.data.id").value(1))
                 .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(report.getCreateDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.modifyDate").value(Matchers.not(oldModifyDate.toString().substring(0, 25))))
                 .andExpect(jsonPath("$.data.authorId").value(report.getAuthor().getId()))
                 .andExpect(jsonPath("$.data.authorName").value(report.getAuthor().getName()))
                 .andExpect(jsonPath("$.data.title").value("축구 하실 분 계신가요?"))
