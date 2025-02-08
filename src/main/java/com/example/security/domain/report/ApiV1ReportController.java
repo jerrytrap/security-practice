@@ -69,4 +69,15 @@ public class ApiV1ReportController {
                 new ReportDto(report)
         );
     }
+
+    @DeleteMapping("/{id}")
+    public RsData<Void> delete(
+            @PathVariable long id
+    ) {
+        Student member = rq.checkAuthentication();
+        Report report = reportService.findById(id).get();
+        report.checkActorCanDelete(member);
+        reportService.delete(report);
+        return new RsData<>("200-1", "%d번 글이 삭제되었습니다.".formatted(id));
+    }
 }

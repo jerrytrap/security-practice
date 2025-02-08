@@ -261,4 +261,24 @@ public class ApiV1ReportControllerTest {
                 .andExpect(jsonPath("$.resultCode").value("401-1"))
                 .andExpect(jsonPath("$.msg").value("api key를 입력해주세요."));
     }
+
+    @Test
+    @DisplayName("글 삭제")
+    void t10() throws Exception {
+        Student actor = studentService.findStudentByName("user1").get();
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/api/v1/reports/1")
+                                .header("Authorization", "Bearer " + actor.getApiKey())
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("1번 글이 삭제되었습니다."));
+
+        assertThat(reportService.findById(1)).isEmpty();
+    }
 }
