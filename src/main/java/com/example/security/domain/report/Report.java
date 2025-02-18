@@ -31,6 +31,8 @@ public class Report extends BaseTime {
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
+    private boolean published;
+
     public Comment addComment(Student author, String content) {
         Comment comment = Comment.builder()
                 .report(this)
@@ -64,14 +66,24 @@ public class Report extends BaseTime {
 
         if (actor.equals(author)) return;
 
-        throw new ServiceException("403-2", "작성자만 글을 삭제할 수 있습니다.");
+        throw new ServiceException("403-1", "작성자만 글을 삭제할 수 있습니다.");
     }
 
     public void checkActorCanModify(Student actor) {
-        if (actor == null) throw new ServiceException("403-1", "로그인 후 이용해주세요.");
+        if (actor == null) throw new ServiceException("401-1", "로그인 후 이용해주세요.");
 
         if (actor.equals(author)) return;
 
-        throw new ServiceException("403-2", "작성자만 글을 수정할 수 있습니다.");
+        throw new ServiceException("403-1", "작성자만 글을 수정할 수 있습니다.");
+    }
+
+    public void checkActorCanRead(Student actor) {
+        if (actor == null) throw new ServiceException("401-1", "로그인 후 이용해주세요.");
+
+        if (actor.isAdmin()) return;
+
+        if (actor.equals(author)) return;
+
+        throw new ServiceException("403-1", "비공개글은 작성자만 볼 수 있습니다.");
     }
 }

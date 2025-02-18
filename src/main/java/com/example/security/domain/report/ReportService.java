@@ -16,7 +16,7 @@ public class ReportService {
         return reportRepository.count();
     }
 
-    public Report create(Student author, String title, String content) {
+    public Report create(Student author, String title, String content, boolean published) {
         reportRepository.findByTitle(title)
                 .ifPresent(_ -> {
                     throw new ServiceException("400-1", "Report already exists");
@@ -26,6 +26,7 @@ public class ReportService {
                 .author(author)
                 .title(title)
                 .content(content)
+                .published(published)
                 .build();
 
         return reportRepository.save(report);

@@ -18,7 +18,13 @@ public class ApiV1ReportController {
 
     @GetMapping("/{id}")
     public ReportDto item(@PathVariable Long id) {
-        return new ReportDto(reportService.findById(id).get());
+        Report report = reportService.findById(id).get();
+
+        if (!report.isPublished()) {
+            Student actor = rq.checkAuthentication();
+            report.checkActorCanRead(actor);
+        }
+        return new ReportDto(report);
     }
 
     record PostWriteReqBody(
@@ -36,7 +42,7 @@ public class ApiV1ReportController {
             @RequestBody @Valid PostWriteReqBody reqBody
     ) {
         Student actor = rq.checkAuthentication();
-        Report report = reportService.create(actor, reqBody.title, reqBody.content);
+        Report report = reportService.create(actor, reqBody.title, reqBody.content, true);
         return new RsData<>(
                 "201-1",
                 "%d번 글이 작성되었습니다.".formatted(report.getId()),

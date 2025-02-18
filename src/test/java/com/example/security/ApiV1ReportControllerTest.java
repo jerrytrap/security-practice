@@ -330,7 +330,64 @@ public class ApiV1ReportControllerTest {
                 .andExpect(handler().handlerType(ApiV1ReportController.class))
                 .andExpect(handler().methodName("delete"))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.resultCode").value("403-2"))
+                .andExpect(jsonPath("$.resultCode").value("403-1"))
                 .andExpect(jsonPath("$.msg").value("작성자만 글을 삭제할 수 있습니다."));
+    }
+
+    @Test
+    @DisplayName("비공개글 6번글 조회, with 작성자")
+    void t14() throws Exception {
+        Student actor = studentService.findStudentByName("user1").get();
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/reports/3")
+                                .header("Authorization", "Bearer " + actor.getApiKey())
+                )
+                .andDo(print());
+        Report report = reportService.findById(3).get();
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportController.class))
+                .andExpect(handler().methodName("item"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(report.getId()))
+                .andExpect(jsonPath("$.createDate").value(Matchers.startsWith(report.getCreateDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.modifyDate").value(Matchers.startsWith(report.getModifiedDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.authorId").value(report.getAuthor().getId()))
+                .andExpect(jsonPath("$.authorName").value(report.getAuthor().getName()))
+                .andExpect(jsonPath("$.title").value(report.getTitle()))
+                .andExpect(jsonPath("$.content").value(report.getContent()));
+    }
+    @Test
+    @DisplayName("비공개글 6번글 조회, with no actor")
+    void t15() throws Exception {
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/reports/3")
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportController.class))
+                .andExpect(handler().methodName("item"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.resultCode").value("401-1"))
+                .andExpect(jsonPath("$.msg").value("api key를 입력해주세요."));
+    }
+
+    @Test
+    @DisplayName("비공개글 6번글 조회, with no permission")
+    void t16() throws Exception {
+        Student actor = studentService.findStudentByName("user2").get();
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/reports/3")
+                                .header("Authorization", "Bearer " + actor.getApiKey())
+                )
+                .andDo(print());
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportController.class))
+                .andExpect(handler().methodName("item"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.resultCode").value("403-1"))
+                .andExpect(jsonPath("$.msg").value("비공개글은 작성자만 볼 수 있습니다."));
     }
 }
