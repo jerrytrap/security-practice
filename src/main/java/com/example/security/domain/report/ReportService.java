@@ -16,7 +16,7 @@ public class ReportService {
         return reportRepository.count();
     }
 
-    public Report create(Student author, String title, String content, boolean published) {
+    public Report create(Student author, String title, String content, boolean published, boolean listed) {
         reportRepository.findByTitle(title)
                 .ifPresent(_ -> {
                     throw new ServiceException("400-1", "Report already exists");
@@ -27,6 +27,7 @@ public class ReportService {
                 .title(title)
                 .content(content)
                 .published(published)
+                .listed(listed)
                 .build();
 
         return reportRepository.save(report);
@@ -36,9 +37,11 @@ public class ReportService {
         return reportRepository.findById(id);
     }
 
-    public void modify(Report report, String title, String content) {
+    public void modify(Report report, String title, String content, boolean published, boolean listed) {
         report.setTitle(title);
         report.setContent(content);
+        report.setPublished(published);
+        report.setListed(listed);
         reportRepository.save(report);
     }
 

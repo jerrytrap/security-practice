@@ -21,6 +21,10 @@ public class ReportDto {
 
     private String content;
 
+    private boolean published;
+
+    private boolean listed;
+
     public ReportDto(Report report) {
         this.id = report.getId();
         this.createDate = report.getCreateDate();
@@ -29,5 +33,7 @@ public class ReportDto {
         this.authorName = report.getAuthor().getName();
         this.title = report.getTitle();
         this.content = report.getContent();
+        this.published = report.isPublished();
+        this.listed = report.isListed();
     }
 }

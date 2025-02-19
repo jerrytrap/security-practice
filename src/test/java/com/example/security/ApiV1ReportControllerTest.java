@@ -58,7 +58,10 @@ public class ApiV1ReportControllerTest {
                 .andExpect(jsonPath("$.authorId").value(report.getAuthor().getId()))
                 .andExpect(jsonPath("$.authorName").value(report.getAuthor().getName()))
                 .andExpect(jsonPath("$.title").value(report.getTitle()))
-                .andExpect(jsonPath("$.content").value(report.getContent()));
+                .andExpect(jsonPath("$.content").value(report.getContent()))
+                .andExpect(jsonPath("$.content").value(report.getContent()))
+                .andExpect(jsonPath("$.published").value(report.isPublished()))
+                .andExpect(jsonPath("$.listed").value(report.isListed()));
     }
 
     @Test
@@ -88,7 +91,9 @@ public class ApiV1ReportControllerTest {
                                 .content("""
                                         {
                                             "title": "제목 new",
-                                            "content": "내용 new"
+                                            "content": "내용 new",
+                                            "published": "true",
+                                            "listed": "false"
                                         }
                                         """)
                                 .contentType(
@@ -109,7 +114,10 @@ public class ApiV1ReportControllerTest {
                 .andExpect(jsonPath("$.data.authorId").value(report.getAuthor().getId()))
                 .andExpect(jsonPath("$.data.authorName").value(report.getAuthor().getName()))
                 .andExpect(jsonPath("$.data.title").value(report.getTitle()))
-                .andExpect(jsonPath("$.data.content").value(report.getContent()));
+                .andExpect(jsonPath("$.data.content").value(report.getContent()))
+                .andExpect(jsonPath("$.data.content").value(report.getContent()))
+                .andExpect(jsonPath("$.data.published").value(report.isPublished()))
+                .andExpect(jsonPath("$.data.listed").value(report.isListed()));
     }
 
     @Test
@@ -182,7 +190,9 @@ public class ApiV1ReportControllerTest {
                                 .content("""
                                         {
                                             "title": "축구 하실 분 계신가요?",
-                                            "content": "14시 까지 22명을 모아야 진행이 됩니다."
+                                            "content": "14시 까지 22명을 모아야 진행이 됩니다.",
+                                            "published": true,
+                                            "listed": false
                                         }
                                         """)
                                 .contentType(
@@ -202,7 +212,9 @@ public class ApiV1ReportControllerTest {
                 .andExpect(jsonPath("$.data.authorId").value(report.getAuthor().getId()))
                 .andExpect(jsonPath("$.data.authorName").value(report.getAuthor().getName()))
                 .andExpect(jsonPath("$.data.title").value("축구 하실 분 계신가요?"))
-                .andExpect(jsonPath("$.data.content").value("14시 까지 22명을 모아야 진행이 됩니다."));
+                .andExpect(jsonPath("$.data.content").value("14시 까지 22명을 모아야 진행이 됩니다."))
+                .andExpect(jsonPath("$.data.published").value(true))
+                .andExpect(jsonPath("$.data.listed").value(false));
     }
 
     @Test

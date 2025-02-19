@@ -33,7 +33,9 @@ public class ApiV1ReportController {
             String title,
             @NotBlank
             @Length(min = 2, max = 10000000)
-            String content
+            String content,
+            boolean published,
+            boolean listed
     ) {
     }
 
@@ -42,7 +44,7 @@ public class ApiV1ReportController {
             @RequestBody @Valid PostWriteReqBody reqBody
     ) {
         Student actor = rq.checkAuthentication();
-        Report report = reportService.create(actor, reqBody.title, reqBody.content, true);
+        Report report = reportService.create(actor, reqBody.title, reqBody.content, reqBody.published, reqBody.listed);
         return new RsData<>(
                 "201-1",
                 "%d번 글이 작성되었습니다.".formatted(report.getId()),
@@ -55,7 +57,9 @@ public class ApiV1ReportController {
             String title,
             @NotBlank
             @Length(min = 2, max = 10000000)
-            String content
+            String content,
+            boolean published,
+            boolean listed
     ) {
     }
     @PutMapping("/{id}")
@@ -66,7 +70,7 @@ public class ApiV1ReportController {
         Student actor = rq.checkAuthentication();
         Report report = reportService.findById(id).get();
         report.checkActorCanModify(actor);
-        reportService.modify(report, reqBody.title, reqBody.content);
+        reportService.modify(report, reqBody.title, reqBody.content, reqBody.published, reqBody.listed);
         reportService.flush();
 
         return new RsData<>(

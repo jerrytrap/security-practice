@@ -33,6 +33,8 @@ public class Report extends BaseTime {
 
     private boolean published;
 
+    private boolean listed;
+
     public Comment addComment(Student author, String content) {
         Comment comment = Comment.builder()
                 .report(this)
