@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/reports")
 @RequiredArgsConstructor
@@ -16,15 +18,24 @@ public class ApiV1ReportController {
     private final ReportService reportService;
     private final Rq rq;
 
+    @GetMapping
+    public List<ReportDto> items() {
+        List<Report> posts = reportService.findAllByOrderByIdDesc();
+
+        return posts.stream()
+                .map(ReportDto::new)
+                .toList();
+    }
+
     @GetMapping("/{id}")
-    public ReportDto item(@PathVariable Long id) {
+    public ReportWithContentDto item(@PathVariable Long id) {
         Report report = reportService.findById(id).get();
 
         if (!report.isPublished()) {
             Student actor = rq.checkAuthentication();
             report.checkActorCanRead(actor);
         }
-        return new ReportDto(report);
+        return new ReportWithContentDto(report);
     }
 
     record PostWriteReqBody(
@@ -40,7 +51,7 @@ public class ApiV1ReportController {
     }
 
     @PostMapping
-    public RsData<ReportDto> create(
+    public RsData<ReportWithContentDto> create(
             @RequestBody @Valid PostWriteReqBody reqBody
     ) {
         Student actor = rq.checkAuthentication();
@@ -48,7 +59,7 @@ public class ApiV1ReportController {
         return new RsData<>(
                 "201-1",
                 "%d번 글이 작성되었습니다.".formatted(report.getId()),
-                new ReportDto(report)
+                new ReportWithContentDto(report)
         );
     }
     record PostModifyReqBody(
@@ -63,7 +74,7 @@ public class ApiV1ReportController {
     ) {
     }
     @PutMapping("/{id}")
-    public RsData<ReportDto> modify(
+    public RsData<ReportWithContentDto> modify(
             @PathVariable long id,
             @RequestBody @Valid PostModifyReqBody reqBody
     ) {
@@ -76,7 +87,7 @@ public class ApiV1ReportController {
         return new RsData<>(
                 "200-1",
                 "%d번 글이 수정되었습니다.".formatted(id),
-                new ReportDto(report)
+                new ReportWithContentDto(report)
         );
     }
 

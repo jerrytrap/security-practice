@@ -5,6 +5,7 @@ import com.example.security.global.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -31,6 +32,10 @@ public class ReportService {
                 .build();
 
         return reportRepository.save(report);
+    }
+
+    public List<Report> findAllByOrderByIdDesc() {
+        return reportRepository.findAllByOrderByIdDesc();
     }
 
     public Optional<Report> findById(long id) {
