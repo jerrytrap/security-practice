@@ -19,8 +19,11 @@ public class ApiV1ReportController {
     private final Rq rq;
 
     @GetMapping
-    public List<ReportDto> items() {
-        List<Report> posts = reportService.findAllByOrderByIdDesc();
+    public List<ReportDto> items(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        List<Report> posts = reportService.findByListedPaged(true, page, pageSize);
 
         return posts.stream()
                 .map(ReportDto::new)

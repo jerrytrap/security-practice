@@ -409,7 +409,7 @@ public class ApiV1ReportControllerTest {
     void t17() throws Exception {
         ResultActions resultActions = mvc
                 .perform(
-                        get("/api/v1/reports")
+                        get("/api/v1/reports?page=1&pageSize=3")
                 )
                 .andDo(print());
 
@@ -418,7 +418,7 @@ public class ApiV1ReportControllerTest {
                 .andExpect(handler().methodName("items"))
                 .andExpect(status().isOk());
 
-        List<Report> reports = reportService.findAllByOrderByIdDesc();
+        List<Report> reports = reportService.findByListedPaged(true, 1, 3);
 
         for (int i = 0; i < reports.size(); i++) {
             Report report = reports.get(i);

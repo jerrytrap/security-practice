@@ -3,6 +3,9 @@ package com.example.security.domain.report;
 import com.example.security.domain.student.Student;
 import com.example.security.global.ServiceException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,5 +63,13 @@ public class ReportService {
 
     public Optional<Report> findLatest() {
         return reportRepository.findFirstByOrderByIdDesc();
+    }
+
+    public List<Report> findByListedPaged(boolean listed, int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        Page<Report> reportPage = reportRepository.findByListed(listed, pageRequest);
+
+        return reportPage.getContent();
     }
 }
