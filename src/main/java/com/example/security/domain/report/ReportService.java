@@ -65,11 +65,9 @@ public class ReportService {
         return reportRepository.findFirstByOrderByIdDesc();
     }
 
-    public List<Report> findByListedPaged(boolean listed, int page, int pageSize) {
+    public Page<Report> findByListedPaged(boolean listed, int page, int pageSize) {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
-        Page<Report> reportPage = reportRepository.findByListed(listed, pageRequest);
-
-        return reportPage.getContent();
+        return reportRepository.findByListed(listed, pageRequest);
     }
 }

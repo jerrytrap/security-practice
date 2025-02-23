@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,9 +24,11 @@ public class ApiV1ReportController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize
     ) {
-        List<Report> posts = reportService.findByListedPaged(true, page, pageSize);
+        Page<Report> reportPage = reportService.findByListedPaged(true, page, pageSize);
 
-        return posts.stream()
+        return reportPage
+                .getContent()
+                .stream()
                 .map(ReportDto::new)
                 .toList();
     }

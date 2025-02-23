@@ -418,7 +418,7 @@ public class ApiV1ReportControllerTest {
                 .andExpect(handler().methodName("items"))
                 .andExpect(status().isOk());
 
-        List<Report> reports = reportService.findByListedPaged(true, 1, 3);
+        List<Report> reports = reportService.findByListedPaged(true, 1, 3).getContent();
 
         for (int i = 0; i < reports.size(); i++) {
             Report report = reports.get(i);
