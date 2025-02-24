@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/reports")
@@ -20,17 +21,23 @@ public class ApiV1ReportController {
     private final Rq rq;
 
     @GetMapping
-    public List<ReportDto> items(
+    public Map<String, Object> items(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize
     ) {
         Page<Report> reportPage = reportService.findByListedPaged(true, page, pageSize);
 
-        return reportPage
+        long totalItems = reportPage.getTotalElements();
+        List<ReportDto> items = reportPage
                 .getContent()
                 .stream()
                 .map(ReportDto::new)
                 .toList();
+
+        return Map.of(
+                "totalItems", totalItems,
+                "items", items
+        );
     }
 
     @GetMapping("/{id}")
