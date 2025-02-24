@@ -28,15 +28,21 @@ public class ApiV1ReportController {
         Page<Report> reportPage = reportService.findByListedPaged(true, page, pageSize);
 
         long totalItems = reportPage.getTotalElements();
+
         List<ReportDto> items = reportPage
                 .getContent()
                 .stream()
                 .map(ReportDto::new)
                 .toList();
 
+        long totalPages = reportPage.getTotalPages();
+
         return Map.of(
                 "totalItems", totalItems,
-                "items", items
+                "items", items,
+                "totalPages", totalPages,
+                "currentPageNumber", page,
+                "pageSize", pageSize
         );
     }
 

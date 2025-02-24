@@ -420,7 +420,10 @@ public class ApiV1ReportControllerTest {
                 .andExpect(handler().handlerType(ApiV1ReportController.class))
                 .andExpect(handler().methodName("items"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.totalItems").value(reportPage.getTotalElements()));
+                .andExpect(jsonPath("$.totalItems").value(reportPage.getTotalElements()))
+                .andExpect(jsonPath("$.totalPages").value(reportPage.getTotalPages()))
+                .andExpect(jsonPath("$.currentPageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(3));
 
         List<Report> reports = reportPage.getContent();
 
