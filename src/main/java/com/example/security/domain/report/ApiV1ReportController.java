@@ -1,6 +1,7 @@
 package com.example.security.domain.report;
 
 import com.example.security.domain.student.Student;
+import com.example.security.global.PageDto;
 import com.example.security.global.Rq;
 import com.example.security.global.RsData;
 import jakarta.validation.Valid;
@@ -21,28 +22,13 @@ public class ApiV1ReportController {
     private final Rq rq;
 
     @GetMapping
-    public Map<String, Object> items(
+    public PageDto<ReportDto> items(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize
     ) {
-        Page<Report> reportPage = reportService.findByListedPaged(true, page, pageSize);
-
-        long totalItems = reportPage.getTotalElements();
-
-        List<ReportDto> items = reportPage
-                .getContent()
-                .stream()
-                .map(ReportDto::new)
-                .toList();
-
-        long totalPages = reportPage.getTotalPages();
-
-        return Map.of(
-                "totalItems", totalItems,
-                "items", items,
-                "totalPages", totalPages,
-                "currentPageNumber", page,
-                "pageSize", pageSize
+        return new PageDto<>(
+            reportService.findByListedPaged(true, page, pageSize)
+                    .map(ReportDto::new)
         );
     }
 
