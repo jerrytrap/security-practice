@@ -2,6 +2,7 @@ package com.example.security.domain.report;
 
 import com.example.security.domain.student.Student;
 import com.example.security.global.ServiceException;
+import com.example.security.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -69,5 +70,24 @@ public class ReportService {
         PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
 
         return reportRepository.findByListed(listed, pageRequest);
+    }
+
+    public Page<Report> findByListedPaged(
+            boolean listed,
+            String searchKeywordType,
+            String searchKeyword,
+            int page,
+            int pageSize
+    ) {
+        if (Ut.str.isBlank(searchKeyword)) return findByListedPaged(listed, page, pageSize);
+
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        searchKeyword = "%" + searchKeyword + "%";
+
+        return switch (searchKeywordType) {
+            case "content" -> reportRepository.findByListedAndContentLike(listed, searchKeyword, pageRequest);
+            default -> reportRepository.findByListedAndTitleLike(listed, searchKeyword, pageRequest);
+        };
     }
 }

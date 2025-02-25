@@ -8,11 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/reports")
@@ -23,11 +19,13 @@ public class ApiV1ReportController {
 
     @GetMapping
     public PageDto<ReportDto> items(
+            @RequestParam(defaultValue = "title") String searchKeywordType,
+            @RequestParam(defaultValue = "") String searchKeyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize
     ) {
         return new PageDto<>(
-            reportService.findByListedPaged(true, page, pageSize)
+            reportService.findByListedPaged(true, searchKeywordType, searchKeyword, page, pageSize)
                     .map(ReportDto::new)
         );
     }
