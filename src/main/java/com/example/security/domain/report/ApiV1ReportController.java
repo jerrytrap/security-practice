@@ -17,6 +17,21 @@ public class ApiV1ReportController {
     private final ReportService reportService;
     private final Rq rq;
 
+    @GetMapping("/mine")
+    public PageDto<ReportDto> mine(
+            @RequestParam(defaultValue = "title") String searchKeywordType,
+            @RequestParam(defaultValue = "") String searchKeyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        Student actor = rq.checkAuthentication();
+
+        return new PageDto<>(
+                reportService.findByAuthorPaged(actor, searchKeywordType, searchKeyword, page, pageSize)
+                        .map(ReportDto::new)
+        );
+    }
+
     @GetMapping
     public PageDto<ReportDto> items(
             @RequestParam(defaultValue = "title") String searchKeywordType,

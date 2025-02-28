@@ -90,4 +90,29 @@ public class ReportService {
             default -> reportRepository.findByListedAndTitleLike(listed, searchKeyword, pageRequest);
         };
     }
+
+    public Page<Report> findByAuthorPaged(Student author, int page, int pageSize) {
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        return reportRepository.findByAuthor(author, pageRequest);
+    }
+
+    public Page<Report> findByAuthorPaged(
+            Student author,
+            String searchKeywordType,
+            String searchKeyword,
+            int page,
+            int pageSize
+    ) {
+        if (Ut.str.isBlank(searchKeyword)) return findByAuthorPaged(author, page, pageSize);
+
+        PageRequest pageRequest = PageRequest.of(page - 1, pageSize, Sort.by(Sort.Order.desc("id")));
+
+        searchKeyword = "%" + searchKeyword + "%";
+
+        return switch (searchKeywordType) {
+            case "content" -> reportRepository.findByAuthorAndContentLike(author, searchKeyword, pageRequest);
+            default -> reportRepository.findByAuthorAndTitleLike(author, searchKeyword, pageRequest);
+        };
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.security.domain.report;
 
+import com.example.security.domain.student.Student;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,4 +21,10 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     Page<Report> findByListedAndTitleLike(boolean listed, String titleLike, PageRequest pageRequest);
 
     Page<Report> findByListedAndContentLike(boolean listed, String contentLike, PageRequest pageRequest);
+
+    Page<Report> findByAuthor(Student author, PageRequest pageRequest);
+
+    Page<Report> findByAuthorAndTitleLike(Student author, String titleLike, PageRequest pageRequest);
+
+    Page<Report> findByAuthorAndContentLike(Student author, String contentLike, PageRequest pageRequest);
 }
