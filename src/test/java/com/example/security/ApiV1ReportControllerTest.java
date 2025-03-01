@@ -558,4 +558,86 @@ public class ApiV1ReportControllerTest {
                     .andExpect(jsonPath("$.items[%d].listed".formatted(i)).value(report.isListed()));
         }
     }
+
+    @Test
+    @DisplayName("내글 다건 조회 with searchKeyword=발야구")
+    void t21() throws Exception {
+        Student actor = studentService.findStudentByName("user1").get();
+
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/reports/mine?page=1&pageSize=3&searchKeyword=발야구")
+                                .header("Authorization", "Bearer " + actor.getApiKey())
+                )
+                .andDo(print());
+
+        Page<Report> reportPage = reportService
+                .findByAuthorPaged(actor, "title", "발야구", 1, 3);
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportController.class))
+                .andExpect(handler().methodName("mine"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItems").value(reportPage.getTotalElements()))
+                .andExpect(jsonPath("$.totalPages").value(reportPage.getTotalPages()))
+                .andExpect(jsonPath("$.currentPageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(3));
+
+        List<Report> reports = reportPage.getContent();
+
+        for (int i = 0; i < reports.size(); i++) {
+            Report report = reports.get(i);
+            resultActions
+                    .andExpect(jsonPath("$.items[%d].id".formatted(i)).value(report.getId()))
+                    .andExpect(jsonPath("$.items[%d].createDate".formatted(i)).value(Matchers.startsWith(report.getCreateDate().toString().substring(0, 25))))
+                    .andExpect(jsonPath("$.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(report.getModifiedDate().toString().substring(0, 25))))
+                    .andExpect(jsonPath("$.items[%d].authorId".formatted(i)).value(report.getAuthor().getId()))
+                    .andExpect(jsonPath("$.items[%d].authorName".formatted(i)).value(report.getAuthor().getName()))
+                    .andExpect(jsonPath("$.items[%d].title".formatted(i)).value(report.getTitle()))
+                    .andExpect(jsonPath("$.items[%d].content".formatted(i)).doesNotExist())
+                    .andExpect(jsonPath("$.items[%d].published".formatted(i)).value(report.isPublished()))
+                    .andExpect(jsonPath("$.items[%d].listed".formatted(i)).value(report.isListed()));
+        }
+    }
+
+    @Test
+    @DisplayName("내글 다건 조회 with searchKeywordType=content&searchKeyword=18명")
+    void t22() throws Exception {
+        Student actor = studentService.findStudentByName("user1").get();
+
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/reports/mine?page=1&pageSize=3&searchKeywordType=content&searchKeyword=18명")
+                                .header("Authorization", "Bearer " + actor.getApiKey())
+                )
+                .andDo(print());
+
+        Page<Report> reportPage = reportService
+                .findByAuthorPaged(actor, "content", "18명", 1, 3);
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportController.class))
+                .andExpect(handler().methodName("mine"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalItems").value(reportPage.getTotalElements()))
+                .andExpect(jsonPath("$.totalPages").value(reportPage.getTotalPages()))
+                .andExpect(jsonPath("$.currentPageNumber").value(1))
+                .andExpect(jsonPath("$.pageSize").value(3));
+
+        List<Report> reports = reportPage.getContent();
+
+        for (int i = 0; i < reports.size(); i++) {
+            Report report = reports.get(i);
+            resultActions
+                    .andExpect(jsonPath("$.items[%d].id".formatted(i)).value(report.getId()))
+                    .andExpect(jsonPath("$.items[%d].createDate".formatted(i)).value(Matchers.startsWith(report.getCreateDate().toString().substring(0, 25))))
+                    .andExpect(jsonPath("$.items[%d].modifyDate".formatted(i)).value(Matchers.startsWith(report.getModifiedDate().toString().substring(0, 25))))
+                    .andExpect(jsonPath("$.items[%d].authorId".formatted(i)).value(report.getAuthor().getId()))
+                    .andExpect(jsonPath("$.items[%d].authorName".formatted(i)).value(report.getAuthor().getName()))
+                    .andExpect(jsonPath("$.items[%d].title".formatted(i)).value(report.getTitle()))
+                    .andExpect(jsonPath("$.items[%d].content".formatted(i)).doesNotExist())
+                    .andExpect(jsonPath("$.items[%d].published".formatted(i)).value(report.isPublished()))
+                    .andExpect(jsonPath("$.items[%d].listed".formatted(i)).value(report.isListed()));
+        }
+    }
 }
