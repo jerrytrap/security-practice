@@ -3,6 +3,7 @@ package com.example.security;
 import com.example.security.domain.report.ReportService;
 import com.example.security.domain.report.comment.Comment;
 import com.example.security.domain.report.comment.controller.ApiV1ReportCommentController;
+import com.example.security.domain.student.Student;
 import com.example.security.domain.student.StudentService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,5 +62,25 @@ public class ApiV1ReportCommentControllerTest {
                     .andExpect(jsonPath("$[%d].authorName".formatted(i)).value(comment.getAuthor().getName()))
                     .andExpect(jsonPath("$[%d].content".formatted(i)).value(comment.getContent()));
         }
+    }
+
+    @Test
+    @DisplayName("댓글 삭제")
+    void t2() throws Exception {
+        Student actor = studentService.findStudentByName("user2").get();
+
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/api/v1/reports/1/comments/1")
+                                .header("Authorization", "Bearer " + actor.getApiKey())
+                )
+                .andDo(print());
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportCommentController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.resultCode").value("200-1"))
+                .andExpect(jsonPath("$.msg").value("1번 댓글이 삭제되었습니다."));
     }
 }
