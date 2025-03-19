@@ -1,5 +1,6 @@
 package com.example.security;
 
+import com.example.security.domain.report.Report;
 import com.example.security.domain.report.ReportService;
 import com.example.security.domain.report.comment.Comment;
 import com.example.security.domain.report.comment.controller.ApiV1ReportCommentController;
@@ -117,5 +118,42 @@ public class ApiV1ReportCommentControllerTest {
                 .andExpect(jsonPath("$.data.authorId").value(actor.getId()))
                 .andExpect(jsonPath("$.data.authorName").value(actor.getName()))
                 .andExpect(jsonPath("$.data.content").value("내용 new"));
+    }
+
+    @Test
+    @DisplayName("댓글 등록")
+    void t4() throws Exception {
+        Student actor = studentService.findStudentByName("user2").get();
+
+        ResultActions resultActions = mvc
+                .perform(
+                        post("/api/v1/reports/1/comments")
+                                .header("Authorization", "Bearer " + actor.getApiKey())
+                                .content("""
+                                         {
+                                             "content": "내용 new"
+                                         }
+                                         """)
+                                .contentType(
+                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
+                                )
+                )
+                .andDo(print());
+
+        Report report = reportService.findById(1).get();
+        Comment comment = report.getComments().getLast();
+
+        resultActions
+                .andExpect(handler().handlerType(ApiV1ReportCommentController.class))
+                .andExpect(handler().methodName("write"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.resultCode").value("201-1"))
+                .andExpect(jsonPath("$.msg").value("%d번 댓글이 생성되었습니다.".formatted(comment.getId())))
+                .andExpect(jsonPath("$.data.id").value(comment.getId()))
+                .andExpect(jsonPath("$.data.createDate").value(Matchers.startsWith(comment.getCreateDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.modifiedDate").value(Matchers.startsWith(comment.getModifiedDate().toString().substring(0, 25))))
+                .andExpect(jsonPath("$.data.authorId").value(comment.getAuthor().getId()))
+                .andExpect(jsonPath("$.data.authorName").value(comment.getAuthor().getName()))
+                .andExpect(jsonPath("$.data.content").value(comment.getContent()));
     }
 }
