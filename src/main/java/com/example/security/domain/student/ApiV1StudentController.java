@@ -6,6 +6,7 @@ import com.example.security.global.ServiceException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,6 +27,7 @@ public class ApiV1StudentController {
     }
 
     @PostMapping("/join")
+    @Transactional
     public RsData<StudentDto> join(
             @RequestBody @Valid StudentJoinReqBody reqBody
     ) {
@@ -49,7 +51,9 @@ public class ApiV1StudentController {
             String apiKey
     ) {
     }
+
     @PostMapping("/login")
+    @Transactional(readOnly = true)
     public RsData<StudentLoginResBody> login(
             @RequestBody @Valid StudentLoginReqBody reqBody
     ) {
@@ -71,6 +75,7 @@ public class ApiV1StudentController {
     }
 
     @GetMapping("/me")
+    @Transactional(readOnly = true)
     public StudentDto me() {
         Student student = rq.checkAuthentication();
 

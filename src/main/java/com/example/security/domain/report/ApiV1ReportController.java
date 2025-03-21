@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +19,7 @@ public class ApiV1ReportController {
     private final Rq rq;
 
     @GetMapping("/mine")
+    @Transactional(readOnly = true)
     public PageDto<ReportDto> mine(
             @RequestParam(defaultValue = "title") String searchKeywordType,
             @RequestParam(defaultValue = "") String searchKeyword,
@@ -33,6 +35,7 @@ public class ApiV1ReportController {
     }
 
     @GetMapping
+    @Transactional(readOnly = true)
     public PageDto<ReportDto> items(
             @RequestParam(defaultValue = "title") String searchKeywordType,
             @RequestParam(defaultValue = "") String searchKeyword,
@@ -46,6 +49,7 @@ public class ApiV1ReportController {
     }
 
     @GetMapping("/{id}")
+    @Transactional(readOnly = true)
     public ReportWithContentDto item(@PathVariable Long id) {
         Report report = reportService.findById(id).get();
 
@@ -69,6 +73,7 @@ public class ApiV1ReportController {
     }
 
     @PostMapping
+    @Transactional
     public RsData<ReportWithContentDto> create(
             @RequestBody @Valid PostWriteReqBody reqBody
     ) {
@@ -91,7 +96,9 @@ public class ApiV1ReportController {
             boolean listed
     ) {
     }
+
     @PutMapping("/{id}")
+    @Transactional
     public RsData<ReportWithContentDto> modify(
             @PathVariable long id,
             @RequestBody @Valid PostModifyReqBody reqBody
@@ -110,6 +117,7 @@ public class ApiV1ReportController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public RsData<Void> delete(
             @PathVariable long id
     ) {

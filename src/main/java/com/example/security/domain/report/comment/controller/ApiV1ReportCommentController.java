@@ -26,6 +26,7 @@ public class ApiV1ReportCommentController {
     private final Rq rq;
 
     @GetMapping
+    @Transactional(readOnly = true)
     public List<CommentDto> items(
             @PathVariable long reportId
     ) {
@@ -40,6 +41,7 @@ public class ApiV1ReportCommentController {
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     public RsData<Void> delete(
             @PathVariable long reportId,
             @PathVariable long id
@@ -72,6 +74,7 @@ public class ApiV1ReportCommentController {
     }
 
     @PutMapping("/{id}")
+    @Transactional
     public RsData<CommentDto> modify(
             @PathVariable long reportId,
             @PathVariable long id,
